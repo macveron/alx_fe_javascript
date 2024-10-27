@@ -129,10 +129,39 @@ function showRandomQuote() {
 // Sync data periodically (e.g., every 60 seconds)
 setInterval(syncQuotes, 60000);
 
+// Export quotes to JSON file
+function exportQuotesToJson() {
+  const quotesJson = JSON.stringify(quotes, null, 2); // Pretty print JSON
+  const blob = new Blob([quotesJson], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'quotes.json'; // Filename for the downloaded file
+  document.body.appendChild(a);
+  a.click(); // Trigger download
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url); // Cleanup
+}
+
+// Import quotes from JSON file
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+  fileReader.onload = function(event) {
+    const importedQuotes = JSON.parse(event.target.result);
+    quotes.push(...importedQuotes);
+    saveQuotes();
+    alert('Quotes imported successfully!');
+  };
+  fileReader.readAsText(event.target.files[0]);
+}
+
 // Initialize the app
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+document.getElementById('exportQuotes').addEventListener('click', exportQuotesToJson); // Add event for export
 window.onload = () => {
   syncQuotes(); // Fetch quotes on load
+  createAddQuoteForm();
   populateCategories();
   showRandomQuote();
 };
