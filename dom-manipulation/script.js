@@ -6,14 +6,20 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
 
 const SERVER_URL = 'https://jsonplaceholder.typicode.com/posts';
 
-// Fetch quotes from the server to sync with local data
+// Sync quotes with server and handle conflicts
+async function syncQuotes() {
+  await fetchQuotesFromServer();
+  await saveQuotesToServer();
+}
+
+// Fetch quotes from the server
 async function fetchQuotesFromServer() {
   try {
     const response = await fetch(SERVER_URL);
     const serverQuotes = await response.json();
 
     // Simulate extracting necessary quote information
-    const fetchedQuotes = serverQuotes.map((item, index) => ({
+    const fetchedQuotes = serverQuotes.map((item) => ({
       id: item.id,
       text: item.title, // Using 'title' field to simulate quote text
       category: "General" // Default category, as JSONPlaceholder lacks categories
@@ -40,7 +46,7 @@ async function saveQuotesToServer() {
   }
 }
 
-// Conflict resolution: server data takes precedence
+// Resolve conflicts between local and server quotes
 function resolveConflicts(serverQuotes) {
   const localQuoteIds = quotes.map(quote => quote.id);
   const newServerQuotes = serverQuotes.filter(quote => !localQuoteIds.includes(quote.id));
@@ -120,12 +126,13 @@ function showRandomQuote() {
 }
 
 // Sync data periodically (e.g., every 60 seconds)
-setInterval(fetchQuotesFromServer, 60000);
+setInterval(syncQuotes, 60000);
 
 // Initialize the app
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 window.onload = () => {
-  fetchQuotesFromServer(); // Fetch quotes on load
+  syncQuotes(); // Fetch quotes on load
+  createAddQuoteForm();
   populateCategories();
   showRandomQuote();
 };
