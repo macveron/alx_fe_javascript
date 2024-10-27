@@ -10,6 +10,7 @@ const SERVER_URL = 'https://jsonplaceholder.typicode.com/posts';
 async function syncQuotes() {
   await fetchQuotesFromServer();
   await saveQuotesToServer();
+  alert("Quotes synced with server!"); // User feedback for successful sync
 }
 
 // Fetch quotes from the server
@@ -132,7 +133,6 @@ setInterval(syncQuotes, 60000);
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 window.onload = () => {
   syncQuotes(); // Fetch quotes on load
-  createAddQuoteForm();
   populateCategories();
   showRandomQuote();
 };
