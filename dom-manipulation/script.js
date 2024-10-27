@@ -94,6 +94,7 @@ function importFromJsonFile(event) {
 // Initialize the app
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 window.onload = () => {
+  createAddQuoteForm();
   populateCategories();
   showRandomQuote();
 };
